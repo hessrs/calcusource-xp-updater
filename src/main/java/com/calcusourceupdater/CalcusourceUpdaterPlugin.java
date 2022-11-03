@@ -29,7 +29,7 @@ import java.util.HashSet;
 	name = "Calcusource Updater",
 	description = "Automatically updates your stats on calcusource when you log out",
 	tags = {"calcusource", "ccs", "tracker", "updater"},
-	enabledByDefault = false
+	enabledByDefault = true
 )
 public class CalcusourceUpdaterPlugin extends Plugin
 {
@@ -82,8 +82,13 @@ public class CalcusourceUpdaterPlugin extends Plugin
 
 			long totalXp = client.getOverallExperience();
 
+			int minimumUpdatableXP = config.minimumUpdatableXP();
+			if (minimumUpdatableXP < 10000) {
+				minimumUpdatableXP = 10000;
+			}
+
 			// Don't submit update unless xp threshold is reached
-			if (Math.abs(totalXp - lastXp) > config.minimumUpdatableXP())
+			if (Math.abs(totalXp - lastXp) > minimumUpdatableXP)
 			{
 				log.debug("Submitting update for {}", local.getName());
 				update(local.getName());
@@ -95,7 +100,6 @@ public class CalcusourceUpdaterPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick gameTick)
 	{
-		log.info("example game tick");
 		if (fetchXp)
 		{
 			lastXp = client.getOverallExperience();
@@ -120,7 +124,7 @@ public class CalcusourceUpdaterPlugin extends Plugin
 					.scheme("https")
 					.host("calcusource.com")
 					.addPathSegment("tracker")
-					.addPathSegment("track")
+					.addPathSegment("update")
 					.addQueryParameter("player", username)
 					.build();
 
@@ -140,7 +144,7 @@ public class CalcusourceUpdaterPlugin extends Plugin
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				log.warn("Error submitting {} update, caused by {}.", platform, e.getMessage());
+				log.debug("Error submitting {} update, caused by {}.", platform, e.getMessage());
 			}
 
 			@Override

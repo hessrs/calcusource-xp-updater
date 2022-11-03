@@ -12,7 +12,7 @@ public interface CalcusourceUpdaterConfig extends Config
     @ConfigItem(
             keyName = "minimumUpdatableXP",
             name = "Minimum Updatable XP",
-            description = "Minimum xp required to be gained in order to send an update to calcusource"
+            description = "Minimum xp required to be gained in order to send an update to calcusource (min 10k)"
     )
     default int minimumUpdatableXP()
     {
