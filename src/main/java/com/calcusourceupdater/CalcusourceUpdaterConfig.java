@@ -8,14 +8,14 @@ import net.runelite.client.config.Range;
 @ConfigGroup("calcusourceupdater")
 public interface CalcusourceUpdaterConfig extends Config
 {
-    @Range(min = 0)
+    @Range(min = 1)
     @ConfigItem(
             keyName = "minimumUpdatableXP",
             name = "Minimum Updatable XP",
-            description = "Minimum xp required to be gained in order to send an update to calcusource (min 10k)"
+            description = "Minimum xp required to be gained in order to send an update to calcusource"
     )
     default int minimumUpdatableXP()
     {
-        return 10000;
+        return 1;
     }
 }

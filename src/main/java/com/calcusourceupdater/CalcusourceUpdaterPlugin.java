@@ -83,9 +83,6 @@ public class CalcusourceUpdaterPlugin extends Plugin
 			long totalXp = client.getOverallExperience();
 
 			int minimumUpdatableXP = config.minimumUpdatableXP();
-			if (minimumUpdatableXP < 10000) {
-				minimumUpdatableXP = 10000;
-			}
 
 			// Don't submit update unless xp threshold is reached
 			if (Math.abs(totalXp - lastXp) > minimumUpdatableXP)
