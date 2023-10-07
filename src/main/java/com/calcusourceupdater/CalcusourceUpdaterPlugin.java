@@ -1,6 +1,5 @@
 package com.calcusourceupdater;
 
-import javax.inject.Inject;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -20,6 +19,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -127,6 +127,7 @@ public class CalcusourceUpdaterPlugin extends Plugin
 
 			Request request = new Request.Builder()
 					.header("User-Agent", "RuneLite")
+					.addHeader("RUNELITE_ACCOUNT_HASH", String.valueOf(client.getAccountHash()))
 					.url(url)
 					.build();
 
