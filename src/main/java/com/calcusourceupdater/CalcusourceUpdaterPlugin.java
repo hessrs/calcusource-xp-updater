@@ -14,6 +14,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -128,6 +129,7 @@ public class CalcusourceUpdaterPlugin extends Plugin
 			Request request = new Request.Builder()
 					.header("User-Agent", "RuneLite")
 					.addHeader("RUNELITE_ACCOUNT_HASH", String.valueOf(client.getAccountHash()))
+					.header("RUNELITE_ACCOUNT_HASH", String.valueOf(client.getAccountHash()))
 					.url(url)
 					.build();
 
