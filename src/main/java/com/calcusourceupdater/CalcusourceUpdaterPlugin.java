@@ -93,7 +93,8 @@ public class CalcusourceUpdaterPlugin extends Plugin
 				update(local.getName());
 				lastXp = totalXp;
 			}
-			else if (totalXp >= 4600000000) {
+			else if (totalXp >= 4600000000)
+			{
 			    update(local.getName());
 			}
 		}
