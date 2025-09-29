@@ -87,15 +87,23 @@ public class CalcusourceUpdaterPlugin extends Plugin
 
 			// Don't submit update unless xp threshold is reached
 			// or the player has max xp
-			if (Math.abs(totalXp - lastXp) > minimumUpdatableXP)
+			if (totalXp >= 4_600_000_000L)
+			{
+			    log.debug("Submitting max xp update for {}", local.getName());
+            	update(local.getName());
+            	lastXp = totalXp;
+			}
+			else if (local.getName().toLowerCase().equals("jacobs")
+			{
+			    log.debug("Submitting manual update for {}", local.getName());
+                update(local.getName());
+                lastXp = totalXp;
+			}
+			else if (Math.abs(totalXp - lastXp) > minimumUpdatableXP)
 			{
 				log.debug("Submitting update for {}", local.getName());
-				update(local.getName());
-				lastXp = totalXp;
-			}
-			else if (totalXp >= 4600000000L)
-			{
-			    update(local.getName());
+                update(local.getName());
+                lastXp = totalXp;
 			}
 		}
 	}
