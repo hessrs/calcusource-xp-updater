@@ -93,7 +93,7 @@ public class CalcusourceUpdaterPlugin extends Plugin
             	update(local.getName());
             	lastXp = totalXp;
 			}
-			else if (local.getName().toLowerCase().equals("jacobs")
+			else if (local.getName().toLowerCase().equals("jacobs"))
 			{
 			    log.debug("Submitting manual update for {}", local.getName());
                 update(local.getName());
