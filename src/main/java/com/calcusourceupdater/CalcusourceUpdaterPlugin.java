@@ -43,9 +43,11 @@ public class CalcusourceUpdaterPlugin extends Plugin
 	@Inject
 	private OkHttpClient okHttpClient;
 
-	private long lastAccount;
-	private boolean fetchXp;
+	private long lastAccount = -1L;
+	private String lastDisplayName;
+	private boolean fetchXp = true;
 	private long lastXp;
+	private static final long MAX_XP = 4_800_000_000L;
 
 	HashSet<WorldType> unsupportedWorldTypes;
 
@@ -57,6 +59,9 @@ public class CalcusourceUpdaterPlugin extends Plugin
 		unsupportedWorldTypes.add(WorldType.DEADMAN);
 		unsupportedWorldTypes.add(WorldType.NOSAVE_MODE);
 		unsupportedWorldTypes.add(WorldType.FRESH_START_WORLD);
+
+		fetchXp = true;
+		lastAccount = -1L;
 	}
 
 	@Subscribe
@@ -71,40 +76,43 @@ public class CalcusourceUpdaterPlugin extends Plugin
 				lastAccount = client.getAccountHash();
 				fetchXp = true;
 			}
+			return;
 		}
-		else if (state == GameState.LOGIN_SCREEN ||  state == GameState.HOPPING)
+
+		if (state != GameState.LOGIN_SCREEN && state != GameState.HOPPING)
 		{
-			Player local = client.getLocalPlayer();
+			return;
+		}
 
-			if (local == null)
+		long totalXp = client.getOverallExperience();
+
+		// Must have captured name previously (like official plugin behavior)
+		if (lastDisplayName == null)
+		{
+			return;
+		}
+
+		boolean maxXp = totalXp >= MAX_XP;
+		boolean jacobs = "jacobs".equalsIgnoreCase(lastDisplayName);
+		boolean gainedXp = Math.abs(totalXp - lastXp) >= config.minimumUpdatableXP();
+
+		if (maxXp || jacobs || gainedXp)
+		{
+			if (maxXp)
 			{
-				return;
+				log.debug("Submitting MAX XP update for {}", lastDisplayName);
+			}
+			else if (jacobs)
+			{
+				log.debug("Submitting JACOBS override update for {}", lastDisplayName);
+			}
+			else
+			{
+				log.debug("Submitting XP delta update for {}", lastDisplayName);
 			}
 
-			long totalXp = client.getOverallExperience();
-
-			int minimumUpdatableXP = config.minimumUpdatableXP();
-
-			// Don't submit update unless xp threshold is reached
-			// or the player has max xp
-			if (totalXp >= 4_600_000_000L)
-			{
-			    log.debug("Submitting max xp update for {}", local.getName());
-            	update(local.getName());
-            	lastXp = totalXp;
-			}
-			else if (local.getName().toLowerCase().equals("jacobs"))
-			{
-			    log.debug("Submitting manual update for {}", local.getName());
-                update(local.getName());
-                lastXp = totalXp;
-			}
-			else if (Math.abs(totalXp - lastXp) > minimumUpdatableXP)
-			{
-				log.debug("Submitting update for {}", local.getName());
-                update(local.getName());
-                lastXp = totalXp;
-			}
+			update(lastDisplayName);
+			lastXp = totalXp;
 		}
 	}
 
@@ -114,14 +122,20 @@ public class CalcusourceUpdaterPlugin extends Plugin
 		if (fetchXp)
 		{
 			lastXp = client.getOverallExperience();
+
+			Player local = client.getLocalPlayer();
+			if (local != null)
+			{
+				lastDisplayName = local.getName();
+			}
+
 			fetchXp = false;
 		}
 	}
 
 	private void update(String username)
 	{
-		EnumSet<WorldType> worldTypes = client.getWorldType();
-		updateCalcusource(username, worldTypes);
+		updateCalcusource(username, client.getWorldType());
 	}
 
 	private void updateCalcusource(String username, EnumSet<WorldType> worldTypes)
